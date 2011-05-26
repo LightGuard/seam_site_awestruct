@@ -1,4 +1,4 @@
-profile:
+profiles:
   developemnt:
   staging:
     base_url: http://seam.awestruct.org
