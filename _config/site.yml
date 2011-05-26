@@ -1,0 +1,10 @@
+profile:
+  developemnt:
+  staging:
+    base_url: http://seam.awestruct.org
+    deploy:
+      host: seam.awestruct.org
+      path: /var/www/domains/awestruct.org/seam/htdocs/
+  production:
+
+title: Seam Framework
