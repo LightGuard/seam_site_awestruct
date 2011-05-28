@@ -7,4 +7,4 @@ profiles:
       path: /var/www/domains/awestruct.org/seam/htdocs/
   production:
 
-title: Seam Framework
+title: Seam Framework - JBoss Seam
