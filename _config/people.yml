@@ -1,0 +1,56 @@
+-
+  name: Jason Porter
+  github: LightGuard
+  jira: lightguard
+  jboss_org: lightguard
+  avatar_url: https://si0.twimg.com/profile_images/1366576563/Avatar_Real_picture_reasonably_small.jpg
+  location: West Jordan, UT, USA
+  company: JBoss by Red Hat
+-
+  name: Dan Allen
+  github: mojavelinux
+  jira: mojavelinux
+  jboss_org: mojavelinux
+  avatar_url: https://si0.twimg.com/profile_images/53703885/twitter_normal.jpg
+  location: Laurel, MD, USA
+  company: JBoss by Red Hat
+-
+  name: Shane Bryzak
+  github: sbryzak
+  jira: shane.bryzak
+  jboss_org: shane.bryzak
+  avatar_url: http://a0.twimg.com/profile_images/432322269/shane_bryzak_normal.jpg
+  location: Brisbane, AU
+  company: JBoss by Red Hat
+-
+  name: Martin Gencur
+  github: mgencur
+  jira: mgencur
+  jboss_org: mgencur
+  avatar_url:
+  location:
+  company: JBoss by Red Hat
+-
+  name: Lincoln Baxter III
+  github: lincolnthree
+  jira: lincolnthree
+  jboss_org: lincolnthree
+  avatar_url: https://si0.twimg.com/profile_images/1154338497/screenshot2_normal.png
+  location:
+  company: JBoss by Red Hat
+-
+  name: Nicklas Karlsson
+  github: nickarls
+  jira: nickarls
+  jboss_org: nickarls
+  avatar_url: http://community.jboss.org/profile-image-display.jspa?imageID=4666&size=72
+  location: Turku, Finland
+  company: JBoss by Red Hat
+-
+  name: Pete Muir
+  github: pmuir
+  jira: petemuir
+  jboss_org: petemuir
+  avatar_url: http://community.jboss.org/people/petemuir/avatar/46.png?a=1221
+  location: Edinburgh, UK
+  company: JBoss by Red Hat
