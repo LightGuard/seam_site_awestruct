@@ -23,12 +23,18 @@ layout: base
                         -for contributor in page.contributors
                             %tr
                                 %td
-                                    %img{:src=>"#{preferred_value('avatar_url', contributor['login'], contributor['avatar_url'])}", :width=>"50", :height=>"50"}
-                                    %a{:href=>"https://community.jboss.org/people/#{preferred_value('jboss_org', contributor['login'], '')}"}
-                                        #{preferred_value('name', contributor['login'], contributor['login'])}
-                                %td #{contributor['login']}
-                                %td #{preferred_value('company', contributor['login'], '')}
-                                %td #{preferred_value('location', contributor['login'], '')}
+                                    %img{:src=>"#{page.preferred_value('avatar_url', contributor['login'], contributor['avatar_url'])}", :width=>"50", :height=>"50"}
+                                    - if site.people.find {|p| p.github == contributor['login']}
+                                        %a{:href=>"https://community.jboss.org/people/#{page.preferred_value('jboss_org', contributor['login'], '')}"}
+                                            #{page.preferred_value('name', contributor['login'], site.github_user[contributor['login']]['name'])}
+                                    - else
+                                        %a{:href=>site.github_user[contributor['login']]['html_url']}
+                                            #{site.github_user[contributor['login']]['name']}
+                                %td= contributor['login']
+                                %td
+                                    #{page.preferred_value('company', contributor['login'], site.github_user[contributor['login']]['company'])}
+                                %td
+                                    #{page.preferred_value('location', contributor['login'], site.github_user[contributor['login']]['location'])}
         .block
             .column.span-24
                 %h2 Releases
@@ -41,10 +47,11 @@ layout: base
                     %tbody
                         - for version in page.versions
                             %tr
-                                %td #{version['name']}
-                                %td #{version['releaseDate']}
-                                -#%td= DateTime::strptime("#{version['releaseDate']}", '%FT%T.%L%z')
-                                %td #{version['description']}
+                                %td
+                                    %a{:href=>"#{version['self']}"}
+                                        #{version['name']}
+                                %td= version['releaseDate']
+                                %td= version['description']
     .column.span-7.last
         %h3 Downloads
         - page.downloads.each_pair do |key, value|
