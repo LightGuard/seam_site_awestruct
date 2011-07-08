@@ -3,7 +3,8 @@ title: Seam Cron
 layout: module
 module_name: cron
 github_project: cron
-jira_project: SEAMCRON
+jira_project_key: SEAMCRON
+jira_project_id: 12311160
 tagline: Scheduling and asynchronous invocation support for managed beans. 
 maven_artifact_id: 
   - seam-cron-asynchronous-quartz

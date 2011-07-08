@@ -1,7 +1,5 @@
 require 'rest-client'
 require 'json'
-require 'people_finder'
-require 'hpricot'
 
 # Retrieves versions, contributors and related data for
 # each module page.
@@ -10,8 +8,6 @@ require 'hpricot'
 class ProjectModules
     def execute(site)
         site.pages.each do |page|
-            page.extend(PeopleFinder)
-
             if page.source_path =~ /module/ and page.is_a?(Awestruct::FrontMatterFile)
                 jira_repsonse = RestClient.get "https://issues.jboss.org/rest/api/latest/project/#{page.jira_project_key}"
                 jira_json = JSON.parse jira_repsonse.body
@@ -19,6 +15,7 @@ class ProjectModules
                 # Fix the dates
                 jira_json['versions'].each do |version|
                     version['releaseDate'] = DateTime::parse(version['releaseDate']).to_date() if version['released']
+                    # TODO: retrieve release notes for the version and add it to the page
                     version['releaseNotes'] = Hpricot(RestClient.get("https://issues.jboss.org/secure/ReleaseNote.jspa?projectId=#{page.jira_project_id}&version=#{version['self'].split('/').last}").body).at('#editcopy').following_siblings.to_html
                 end
 

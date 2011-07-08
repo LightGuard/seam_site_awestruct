@@ -3,7 +3,8 @@ title: Seam Faces
 layout: module
 module_name: faces
 github_project: faces
-jira_project: SEAMFACES
+jira_project_key: SEAMFACES
+jira_project_id: 12310973
 tagline: Further unifies JSF and CDI, brings enhancements to the JSF programming model left out of the specification and integrates JSF with other Seam modules
 maven_artifact_id: 
   - seam-faces

@@ -3,7 +3,8 @@ title: Seam International
 layout: module
 module_name: international
 github_project: international
-jira_project: SEAMINTL
+jira_project_key: SEAMINTL
+jira_project_id: 12310974
 tagline: A unified approach to configuring your application for the right language and locale, propagating them to all parts of the application. 
 maven_artifact_id: 
   - seam-international

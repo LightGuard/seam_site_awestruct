@@ -3,7 +3,8 @@ title: Seam Config
 layout: module
 module_name: config
 github_project: config
-jira_project: SEAMCONFIG
+jira_project_key: SEAMCONFIG
+jira_project_id: 12311200
 tagline: Provides alternate bean metadata sources. Implements the typesafe XML-based configuration format defined in earlier revisions of the JSR-299 specification.
 maven_artifact_id: seam-config-xml
 downloads:
