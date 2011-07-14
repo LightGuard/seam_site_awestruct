@@ -4,6 +4,18 @@
       #{site.title}: #{page.title}
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'/stylesheets/screen.css', :media=>'screen, projection' }
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'/stylesheets/print.css', :media=>'print' }
+    %script{:type=>'text/javascript', :src=>'/javascripts/jquery.js' }
+    :javascript
+      $( function () {
+        var syntax_root = "/javascripts/jquery-syntax/"
+
+        if (!$.browser.msie && $( '.syntax' ).length) {
+          $.getScript( syntax_root + "jquery.syntax.min.js", function () {
+            $.syntax( {root: syntax_root,
+                      blockLayout: 'list'} )
+          } )
+        }
+      } )
     /[if lt IE 8]
       %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'/stylesheets/ie.css', :media=>'screen, projection' }
   %body.bp

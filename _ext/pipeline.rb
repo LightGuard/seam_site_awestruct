@@ -3,7 +3,7 @@ require 'page_extensions'
 
 Awestruct::Extensions::Pipeline.new do
     # extension Awestruct::Extensions::Posts.new( '/news' )
-#    helper Awestruct::Extensions::Partial
+    helper Awestruct::Extensions::Partial
 
     extension PageExtensions::PageExtensionsAdditionExtension.new
     extension ProjectModules.new

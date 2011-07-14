@@ -1,3 +1,9 @@
 .sass-cache/
 _site/
 _sandbox
+_tmp
+*.sw?
+.idea
+*.iml
+*.ipr
+*.iws
