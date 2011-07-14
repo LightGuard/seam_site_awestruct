@@ -3,7 +3,8 @@ title: Seam Catch
 layout: module
 module_name: catch
 github_project: catch
-jira_project: SEAMCATCH
+jira_project_key: SEAMCATCH
+jira_project_id: 12311103
 tagline: Provides a simple infrastructure based on CDI events to allow application and module developers to establish a unified and robust exception handling process.
 maven_artifact_id: seam-catch
 downloads:
