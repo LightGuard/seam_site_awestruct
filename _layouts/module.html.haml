@@ -46,7 +46,7 @@ layout: base
                         %a.toolTipLink{:href=>"#{version['self']}"}
                             #{version['name']}
                         -# TODO: this should be done via some jquery floating panel or something
-                        %div.tooltip{:style=>"display: none"}= version['releaseNotes']
+                        %div.tooltip= version['releaseNotes']
                     %td= version['releaseDate']
                     %td= version['description']
 #sidebar

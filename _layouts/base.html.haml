@@ -4,10 +4,9 @@
       #{site.title}: #{page.title}
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'/stylesheets/screen.css', :media=>'screen, projection' }
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'/stylesheets/print.css', :media=>'print' }
-    %script{:type=>'text/javascript', :src=>'http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js' }
-    %script{:type=>'text/javascript', :src=>'http://cdn.jquerytools.org/1.2.5/all/jquery.tools.min.js' }
+    %script{:type=>'text/javascript', :src=>'http://cdn.jquerytools.org/1.2.5/full/jquery.tools.min.js' }
     :javascript
-      $( function () {
+      $(document).ready( function () {
         var syntax_root = "/javascripts/jquery-syntax/"
 
         if (!$.browser.msie && $( '.syntax' ).length) {
