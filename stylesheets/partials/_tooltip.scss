@@ -1,0 +1,28 @@
+/* tooltip styling */
+.tooltip {
+  $border-radius: 15px;
+  font-size: ceil($blueprint-font-size / 1.25);
+  background-color: #eee;
+	display:none;
+	padding: 10px 5px 5px 10px;
+	width:510px;
+  -webkit-border-radius: $border-radius;
+  -webkit-border-top-left-radius: 0;
+  -moz-border-radius: $border-radius;
+  -moz-border-radius-topleft: 0;
+  border-radius: $border-radius;
+  border-top-left-radius: 0;
+  -moz-box-shadow: 0 0 5px 5px #888;
+  -webkit-box-shadow: 0 0 5px 5px #888;
+  box-shadow: 0 0 5px 5px #888;
+
+  h2 {
+    font-size: 1.2em;
+  }
+}
+
+/* a .label element inside tooltip */
+.tooltip .label {
+	color:yellow;
+	width:35px;
+}

@@ -9,9 +9,8 @@
 
 @import "blueprint/liquid";
 
-// To generate css equivalent to the blueprint css but with your
-// configuration applied, uncomment:
-// @include blueprint
+@import "blueprint/scaffolding";
+@import "blueprint/debug";
 
 // If you are doing a lot of stylesheet concatenation, it is suggested
 // that you scope your blueprint styles, so that you can better control
@@ -20,9 +19,34 @@ body.bp {
   @include blueprint-typography(true);
   @include blueprint-liquid-grid;
 
-  // Remove the scaffolding when you're ready to start doing visual design.
-  // Or leave it in if you're happy with how blueprint looks out-of-the-box
-}
+  #footer, #header {
+    @include column($blueprint-liquid-grid-columns);
+    background-color: #E0C380;
+    font-size: ceil($blueprint-font-size / 1.15);
+    h3 {
+      font-size: 1.2em;
+    } 
+    ul.nav {
+      list-style-type: none;
+    }
+  }
+
+  #sidebar {
+    $sidebar-columns: floor($blueprint-liquid-grid-columns / 3);
+    @include column($sidebar-columns, true);
+  }
+
+  #content {
+    $content-columns: ceil(2 * $blueprint-liquid-grid-columns / 3);
+    @include column($content-columns); 
+
+    td {
+      font-size: ceil($blueprint-font-size / 1.15);
+    }
+  }
+
+  @import 'partials/tooltip'
+} 
 
 form.bp {
   @include blueprint-form;

@@ -1,62 +1,56 @@
 ---
 layout: base
 ---
-.block
-    .column.span-24
-        %img#logo{:src=>"/images/modules/seam_#{page.module_name}_85px.jpg"}
-        %br/
-        %em #{page.tagline}
-.block
-    .column.span-16
-        ~ content
-        .block
-            .column.span-24
-                %h2 Contributors
-                %table
-                    %thead
-                        %tr
-                            %th Picture & Name
-                            %th Commit Username
-                            %th Company
-                            %th Location
-                    %tbody
-                        -for contributor in page.contributors
-                            %tr
-                                %td
-                                    %img{:src=>"#{page.preferred_value('avatar_url', contributor['login'], contributor['avatar_url'])}", :width=>"50", :height=>"50"}
-                                    - if site.people.find {|p| p.github == contributor['login']}
-                                        %a{:href=>"https://community.jboss.org/people/#{page.preferred_value('jboss_org', contributor['login'], '')}"}
-                                            #{page.preferred_value('name', contributor['login'], site.github_user[contributor['login']]['name'])}
-                                    - else
-                                        %a{:href=>site.github_user[contributor['login']]['html_url']}
-                                            #{site.github_user[contributor['login']]['name']}
-                                %td= contributor['login']
-                                %td
-                                    #{page.preferred_value('company', contributor['login'], site.github_user[contributor['login']]['company'])}
-                                %td
-                                    #{page.preferred_value('location', contributor['login'], site.github_user[contributor['login']]['location'])}
-    .column.span-7.last
-        %h3 Downloads
-        - page.downloads.each_pair do |key, value|
-            %a{:href=>"#{value}"} #{key}
-        - done
-.block
-    .column.span-24
-        %h2 Releases
-        %table
-            %thead
+#content
+    %img#logo{:src=>"/images/modules/seam_#{page.module_name}_85px.jpg"}
+    %br/
+    %em #{page.tagline}
+    %hr/
+    ~ content
+    %h2 Contributors
+    %table
+        %thead
+            %tr
+                %th Contributor
+                %th GitHub Username
+                %th Company
+                %th Location
+        %tbody
+            -for contributor in page.contributors
                 %tr
-                    %th Name
-                    %th Released Date
-                    %th Description
-                    %th Release Notes
-            %tbody
-                - for version in page.versions
-                    %tr
-                        %td
-                            %a{:href=>"#{version['self']}"}
-                                #{version['name']}
-                        %td= version['releaseDate']
-                        %td= version['description']
+                    %td
+                        %img{:src=>"#{page.preferred_value('avatar_url', contributor['login'], contributor['avatar_url'])}", :width=>"50", :height=>"50"}
+                        %br/
+                        - if site.people.find {|p| p.github == contributor['login']}
+                            %a{:href=>"https://community.jboss.org/people/#{page.preferred_value('jboss_org', contributor['login'], '')}"}
+                                #{page.preferred_value('name', contributor['login'], site.github_user[contributor['login']]['name'])}
+                        - else
+                            %a{:href=>site.github_user[contributor['login']]['html_url']}
+                                #{site.github_user[contributor['login']]['name']}
+                    %td= contributor['login']
+                    %td
+                        #{page.preferred_value('company', contributor['login'], site.github_user[contributor['login']]['company'])}
+                    %td
+                        #{page.preferred_value('location', contributor['login'], site.github_user[contributor['login']]['location'])}
+    %h2 Releases
+    %table
+        %thead
+            %tr
+                %th Name
+                %th Released Date
+                %th Description
+        %tbody
+            - for version in page.versions
+                %tr
+                    %td
+                        %a.toolTipLink{:href=>"#{version['self']}"}
+                            #{version['name']}
                         -# TODO: this should be done via some jquery floating panel or something
-                        %td= version['releaseNotes']
+                        %div.tooltip{:style=>"display: none"}= version['releaseNotes']
+                    %td= version['releaseDate']
+                    %td= version['description']
+#sidebar
+    %h3 Downloads
+    - page.downloads.each_pair do |key, value|
+        %a{:href=>"#{value}"} #{key}
+    - done
