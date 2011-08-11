@@ -4,7 +4,7 @@
     .column.span-9
       %h3 Tutorials
       %ul.nav
-        - site.pages.find_all { |p| p if p.source_path =~ /tutorials/ and p.is_a?(Awestruct::FrontMatterFile)}.each do |t|
+        - site.pages.find_all { |p| p if p.source_path =~ /tutorial/ and p.is_a?(Awestruct::FrontMatterFile)}.each do |t|
           %li
             %a{:href=>t.output_path}
               #{t.title}

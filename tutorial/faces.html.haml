@@ -1,0 +1,38 @@
+---
+layout: base
+title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
+---
+-# 
+  Each section after the setup will showcase features used in the example
+  For example in the example in it's current state we make use of the 
+  ViewConfig. Make sure to include the source file and discuss the parts 
+  that are specific to Seam 3 modules
+:markdown
+  ## Setup
+  There isn't any unique to Seam Faces in setting it up, simply add the maven
+  dependency.
+
+  ## ViewConfig
+%pre(class='syntax java')
+  :escaped
+    @ViewConfig
+    public interface BuzzConfViewConfig {
+        static enum Views {
+            @UrlMapping(pattern = "/")
+            @ViewPattern("/conferences.xhtml")
+            ROOT,
+            
+            
+            @UrlMapping(pattern = "/conference/#{id}")
+            @ViewPattern("/conference.xhtml")
+            CONFERENCE,
+
+            @FacesRedirect
+            @ViewPattern("/*")
+            @AccessDeniedView("/conferences.xhtml")
+            @LoginView("/conferences.xhtml")
+            ALL
+        }
+    }
+:markdown
+  Fill this portion out
