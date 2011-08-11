@@ -100,3 +100,90 @@ title: Getting Started With Seam 3 using the Confbuzz Example
     mkdir -p src/main/webapp/WEB-INF
     mkdir -p src/test/java/seam/example/confbuzz/test
     mkdir -p src/test/resources
+:markdown
+  ### Configuration Files
+  This is a Java EE 6 application, configuration files are (mostly) a thing of
+  the past. There are a few things we need to configure though.
+
+  #### beans.xml
+  The beans.xml file is a CDI marker file (which also may contain some simple
+  configuration). It resides at /WEB-INF/beans.xml:
+%pre(class='syntax xml')
+  :escaped
+    <beans xmlns="http://java.sun.com/xml/ns/javaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+              http://java.sun.com/xml/ns/javaee
+              http://docs.jboss.org/cdi/beans_1_0.xsd">
+      <interceptors>
+          <class>org.jboss.seam.transaction.TransactionInterceptor</class>
+      </interceptors>
+    </beans>
+:markdown
+  The only bit of configuration here is telling CDI to enable the 
+  TransactionInterceptor. This is necessary for using declaritive transactions.
+  More information about declarative transaction management can be found in
+  [the persistence reference guide](http://docs.jboss.org/seam/3/persistence/latest/reference/en-US/html/persistence.html#d0e140).
+.warning
+  If Seam Faces is being used, do not use declarative transaction management
+  from Seam Persistence, Seam Faces will manage the transactions at the start
+  and end of a request.
+:markdown
+  #### faces-config.xml
+  The basic faces-config.xml as in previous applications, but with one major
+  difference: it's empty!
+%pre(class='syntax xml')
+  :escaped
+    <faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+
+    </faces-config>
+:markdown
+  #### web.xml
+  This is another file that can be empty. For this application, however, there
+  are some small changes:
+%pre(class='syntax xml')
+  :escaped
+    <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+      <servlet>
+          <servlet-name>Faces Servlet</servlet-name>
+          <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+          <load-on-startup>1</load-on-startup>
+      </servlet>
+      <servlet-mapping>
+          <servlet-name>Faces Servlet</servlet-name>
+          <url-pattern>*.xhtml</url-pattern>
+      </servlet-mapping>
+      <session-config>
+          <session-timeout>
+              30
+          </session-timeout>
+      </session-config>
+    </web-app> 
+:markdown
+  These changes are to tell JSF to use *.xhtml as the mapping (instead of
+  *.jsf and /faces/*) and to set the session timeout.
+
+  #### persistence.xml
+  The standard persistence.xml file here, nothing specific to Seam 3.
+%pre(class='syntax xml')
+  :escaped
+    <?xml version="1.0" encoding="UTF-8"?>
+    <persistence xmlns="http://java.sun.com/xml/ns/persistence"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+                 version="2.0">
+        <persistence-unit name="confbuzz">
+            <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+            <properties>
+                <!-- Properties for Hibernate (default provider for JBoss AS) -->
+                <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+                <property name="hibernate.show_sql" value="true"/>
+                <!-- Only format when you need to debug, because it slows things down -->
+                <property name="hibernate.format_sql" value="false"/>
+            </properties>
+        </persistence-unit>
+    </persistence>
