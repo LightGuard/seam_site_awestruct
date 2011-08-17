@@ -1,6 +1,11 @@
 .syntax .bash-script .function {
-  font-weight: bold; }
+    font-weight: bold;
+}
+
 .syntax .bash-script .option {
-  color: #0033ff; }
+    color: #0033ff;
+}
+
 .syntax .bash-script .env {
-  font-style: italic; }
+    font-style: italic;
+}

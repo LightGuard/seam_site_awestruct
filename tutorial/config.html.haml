@@ -7,4 +7,16 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Config
   seam-beans.xml instead of beans.xml
 
   May be a good idea to briefly explain what the file is doing.
+:markdown
+  ## [Setup](id:setup)
+  Add this to pom.xml:
+%pre(class='syntax xml')
+  :escaped
+    <dependency>
+        <groupId>org.jboss.seam.config</groupId>
+        <artifactId>seam-config-xml</artifactId>
+    </dependency>
+:markdown
+  Seam Config XML obviously requires an XML file in the project. Place a file
+  named seam-beans.xml in src/main/resources/META-INF
 

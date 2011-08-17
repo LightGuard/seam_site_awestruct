@@ -2,4 +2,10 @@
 // Copyright (c) 2011 Samuel G. D. Williams. <http://www.oriontransfer.co.nz>
 
 
-Syntax.layouts.plain=function(options,code,container){var toolbar=jQuery('<div class="toolbar">');var scrollContainer=jQuery('<div class="syntax plain highlighted">');code.removeClass('syntax');scrollContainer.append(code);return jQuery('<div class="syntax-container">').append(toolbar).append(scrollContainer);};
+Syntax.layouts.plain = function(options, code, container) {
+    var toolbar = jQuery('<div class="toolbar">');
+    var scrollContainer = jQuery('<div class="syntax plain highlighted">');
+    code.removeClass('syntax');
+    scrollContainer.append(code);
+    return jQuery('<div class="syntax-container">').append(toolbar).append(scrollContainer);
+};

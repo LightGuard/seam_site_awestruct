@@ -10,7 +10,7 @@ class ProjectModules
         site.pages.each do |page|
             if page.source_path =~ /module/ and page.is_a?(Awestruct::FrontMatterFile)
                 jira_tmp = File.join(site.tmp_dir, page.output_filename + "_jira.json")
-                unless File.exists?(jira_tmp) and (File.mtime(jira_tmp) <=> (Time.now - 3600)) == 1
+                unless File.exists?(jira_tmp) and (File.mtime(jira_tmp) <=> (Time.now - 86400)) == 1
                     jira_repsonse = RestClient.get "https://issues.jboss.org/rest/api/latest/project/#{page.jira_project_key}"
                     jira_json = JSON.parse jira_repsonse.body
 
@@ -25,7 +25,7 @@ class ProjectModules
                 end
 
                 module_contributor_tmp = File.join(site.tmp_dir, page.output_filename + "_contributors.json")
-                unless File.exists?(module_contributor_tmp) and (File.mtime(module_contributor_tmp) <=> (Time.now - 3600)) == 1
+                unless File.exists?(module_contributor_tmp) and (File.mtime(module_contributor_tmp) <=> (Time.now - 86400)) == 1
                     contributor_response = RestClient.get("https://api.github.com/repos/seam/#{page.module_name}/contributors")
                     module_contributors = JSON.parse(contributor_response.body)
                     JSON.dump(module_contributors, File.open(module_contributor_tmp, "w"))

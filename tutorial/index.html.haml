@@ -4,28 +4,31 @@ title: Getting Started With Seam 3 using the Confbuzz Example
 ---
 :markdown
   # Getting Started with Seam 3 using the ConfBuzz Example
-  ## Introduction
+  ## [Introduction](id:intro)
 
-  In this tutorial we'll learn about many of the Seam 3 modules by building an
-  example from scratch! The modules that we'll be using are:
+  This tutorial will introduce many of the Seam 3 modules by building an
+  example from scratch! A basic understand of CDI is expected before
+  continuing with the tutorial. The modules discussed are:
 
   * [Seam Faces](faces)
   * [Seam Persistence](persistence)
   * [Seam Catch](catch)
   * [Seam Security](security)
   * [Seam Config](config)
+  * [Typesafe Logging](logging)
 
-  Each module will be covered in it's own section / chapter. Please skip ahead
-  as needed. The code for this project is available at 
-  [github](https://github.com/seam/seam-example-conffbuzz)
+  Each module will be covered in it's own section / chapter. Please
+  skip ahead as needed. The code for this project is available at
+  [github](https://github.com/seam/seam-example-conffbuzz). For more
+  information about a particular module and / or it's usage please see the
+  reference documentation for that module, found at <http://docs.jboss.org/seam/3/>
 
-  ## Project Setup
-
+  ## [Project Setup](id:project_setup) 
   All Seam 3 modules are kept in an artifact repository, specifically the
   JBoss Nexus Repository. The easiest way to get started with Seam 3 is
   to add the desired modules to a maven project via the pom.xml. The full
-  [pom.xml](https://github.com/seam/seam-example-confbuzz/blob/develop/pom.xml)
-  is available on github. Please refer to it to see everything that is going
+  [pom.xml](https://github.com/seam/seam-example-confbuzz/blob/develop/pom.xml
+  ) is available on github. Please refer to it to see everything that is going
   on. Throughout this tutorial we will refer to sections of the pom in-line.
 
   Seam, as well as other JBoss projects, have a Build of Materials (BOM) pom
@@ -54,9 +57,9 @@ title: Getting Started With Seam 3 using the Confbuzz Example
     </dependencyManagement>
 -# This will change with 3.1.0, we shouldn't need other versions
 %p
-  There may be times when you need a newer version of a module than what is in
-  the BOM. It's recommended to use the maven properties to specify the version
-  that will be used:
+  There may be times when a newer version of a module than what is in the
+  BOM is needed. It's recommended to use the maven properties to specify the
+  version that will be used:
 %pre(class='syntax xml')
   :escaped
     <properties>
@@ -69,30 +72,39 @@ title: Getting Started With Seam 3 using the Confbuzz Example
         <arquillian.version>1.0.0.Alpha5</arquillian.version>
         <richfaces.version>4.0.0.Final</richfaces.version>
     </properties>
-%p
-  Specifically we're using a newer version of Seam Faces, but we're also using
-  Seam Reports and Seam Validation, which were not included in the initial
-  3.0.0.Final release of Seam.
 .note
   :markdown
-    We're including jodatime because we're going to be using it directly,
-    however, if you are using Seam with Glassfish 3.1, it must be included
+    Jodatime is included because it will be used directly,
+    however, if Seam with Glassfish 3.1 is used, it must be included
     due to [GLASSFISH-16318](http://java.net/jira/browse/GLASSFISH-16318).
     This should be fixed in Glassfish 3.1.1 and 3.2. It also needs
     to be included when using JBoss AS7 as Seam International
     uses it, things don't work quite right if it's not there see
     [SEAMREMOTING-38](https://issues.jboss.org/browse/SEAMREMOTING-38) for
     some background.
+:markdown
+  Because Seam 3 is a collection of CDI modules and the Java EE 6 programing 
+  model will be used, the following dependency will add the API classes for 
+  compilation. They will not be needed for runtime as the application server
+  will supply them so the provided scope is used.  
+%pre(class='syntax xml')
+  :escaped
+    <dependency>
+        <groupId>org.jboss.spec</groupId>
+        <artifactId>jboss-javaee-6.0</artifactId>
+        <version>${jboss.javaee6.version}</version>
+        <type>pom</type>
+        <scope>provided</scope>
+    </dependency>
+:markdown
+  The remaining portions of the pom.xml file should be familiar to those who
+  have used maven, it covers the actual dependencies used and sets up some
+  configuration for various plugins.
 
-  :markdown
-    The remaining portions of the pom.xml file should be familiar to those who
-    have used maven, it covers the actual dependencies used and sets up some
-    configuration for various plugins.
-
-    The remaining setup for the project is of course to create directories and
-    configuration files (thankfully in Java EE 6, these are very small files
-    and can often be left out or empty!). Creating the directory structure is
-    very simple:
+  The last setup step for the project is of course to create directories and
+  configuration files (thankfully in Java EE 6, these are very small files
+  and can often be left out or empty!). Creating the directory structure is
+  very simple:
 %pre(class='syntax plain')
   :plain
     mkdir -p src/main/java/seam/example/confbuzz/model
@@ -101,11 +113,11 @@ title: Getting Started With Seam 3 using the Confbuzz Example
     mkdir -p src/test/java/seam/example/confbuzz/test
     mkdir -p src/test/resources
 :markdown
-  ### Configuration Files
+  ### [Configuration Files](id:configuration)
   This is a Java EE 6 application, configuration files are (mostly) a thing of
-  the past. There are a few things we need to configure though.
+  the past. There are a few things that need to be configured though.
 
-  #### beans.xml
+  #### [beans.xml](beans)
   The beans.xml file is a CDI marker file (which also may contain some simple
   configuration). It resides at /WEB-INF/beans.xml:
 %pre(class='syntax xml')
@@ -126,10 +138,11 @@ title: Getting Started With Seam 3 using the Confbuzz Example
   [the persistence reference guide](http://docs.jboss.org/seam/3/persistence/latest/reference/en-US/html/persistence.html#d0e140).
 .warning
   If Seam Faces is being used, do not use declarative transaction management
-  from Seam Persistence, Seam Faces will manage the transactions at the start
-  and end of a request.
+  from Seam Persistence on methods that are run through JSF (such as action
+  methods and other methods run by the JSF application, Seam Faces will manage
+  the transactions at the start and end of a request.
 :markdown
-  #### faces-config.xml
+  #### [faces-config.xml](faces-config)
   The basic faces-config.xml as in previous applications, but with one major
   difference: it's empty!
 %pre(class='syntax xml')
@@ -141,7 +154,7 @@ title: Getting Started With Seam 3 using the Confbuzz Example
 
     </faces-config>
 :markdown
-  #### web.xml
+  #### [web.xml](web)
   This is another file that can be empty. For this application, however, there
   are some small changes:
 %pre(class='syntax xml')
@@ -167,7 +180,7 @@ title: Getting Started With Seam 3 using the Confbuzz Example
   These changes are to tell JSF to use *.xhtml as the mapping (instead of
   *.jsf and /faces/*) and to set the session timeout.
 
-  #### persistence.xml
+  #### [persistence.xml](persistence)
   The standard persistence.xml file here, nothing specific to Seam 3.
 %pre(class='syntax xml')
   :escaped
@@ -187,3 +200,4 @@ title: Getting Started With Seam 3 using the Confbuzz Example
             </properties>
         </persistence-unit>
     </persistence>
+

@@ -2,7 +2,140 @@
 layout: base
 title: Getting Started With Seam 3 using the Confbuzz Example -- Persistence
 ---
--#
-  Talk about setting up the producer
+:markdown
+  ## [Setup](id:setup)
+  Add this to pom.xml:
+%pre(class='syntax xml')
+  :escaped
+    <dependency>
+        <groupId>org.jboss.seam.persistence</groupId>
+        <artifactId>seam-persistence</artifactId>
+        <version>${seam.persistence.version}</version>
+    </dependency>
+:markdown
+  There is no setup for Seam Persistence when used within a Java EE 6 
+  app server. As [noted previously](../index.html#beans) if declarative
+  transaction management for non EJB components is desired, the intercepter
+  must be activated in the beans.xml file. Please see the 
+  [reference documentation](http://docs.jboss.org/seam/3/persistence/latest/reference/en-US/html/persistence.html)
+  for setup if not running in a Java EE 6 application server.
 
-  introduce what we're using in place of Home and Query
+  ### [Persistence Context Producer](id:pcp)
+  The biggest drawback of using the extended persistence unit from JPA is that
+  it can only be used within EJBs. Of course some may say with Jave EE 6 why
+  wouldn't you use EJBs? That of course is another discussion for another time
+  and out of scope for this tutorial. To over come this limitation and use
+  the persistence unit on POJOs (and have it scoped to something longer than
+  a request) it is best to use a Seam Managed Persistence Unit. Setting this
+  up is quite easy and only requires a couple more annotations besides the
+  standard `@Produces` and scope annotations:
+%pre(class='syntax java')
+  :escaped
+    public class PersistenceConfiguration {
+      @Produces
+      @ExtensionManaged
+      @ConversationScoped
+      @PersistenceUnit
+      private EntityManagerFactory primary;
+    }
+:markdown
+  This is a standard producer field declaration with two additional annotations.
+  The |@ExtensionManaged| and |@PersistenceUnit| annotations are different. The
+  first denotes that the resource is created by an extension instead of the 
+  container. The other is the standard JPA annotation. This will work in a non
+  EE container environment (such as a servlet container) as Seam Persistence
+  will bootstrap JPA. **There is one small gotcha with this, however, the scoping
+  annotation doesn't scope the EntityManagerFactory in this case, it scopes the
+  EntityManager that the EntityManagerFactory creates.**
+
+  ## Accessing and querying entities
+  Any database backed application must make use of the data objects and also
+  perform queries on the data and use the results. Directly using JPA entities
+  and results in CDI can lead to unexpected results and exceptions as the two
+  technologies typically rely on proxying classes or bytecode manipulation. 
+  Often they do not work correctly this way. Because of this, it is best to 
+  wrap the JPA entities in another CDI managed bean. Entity instances and 
+  queries solve this problem and are used in Confbuzz.
+
+  ### [Entity Instance](id:entity_instance)
+  An Entity Instance is simply a CDI wrapper around a JPA entity with the
+  ability to load a specific instance of the JPA entity it manages. The class
+  below demonstrates a simple Entity Instance:
+%pre(class='syntax java')
+  :escaped
+    @Named
+    @ConversationScoped
+    public class ConferenceInstance implements Serializable {
+
+        private Conference instance;
+
+        private Long id;
+
+        private EntityManager em;
+        
+        @Inject
+        public void init(final EntityManager em) {
+            this.instance = new Conference();
+            this.em = em;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+        
+        public void load() {
+            instance = em.find(Conference.class, id);
+            if (instance == null) {
+                throw new EntityNotFoundException("No conference with id " + id);
+            }
+        }
+
+        @Produces
+        @Named
+        public Conference getConference() {
+            return this.instance;
+        }
+
+        public void set(@Observes Conference instance) {
+            this.instance = instance;
+        }
+    }
+:markdown
+  This class could be expanded to manage persisting and removing the managed
+  entity if desired. An instance will become managed by setting the id of the
+  entity or by finding an entity and firing a CDI event -- which will call
+  the observer method. It is important to note the produced JPA entity is
+  named and can be used in JSF EL by the name. This is different than adding
+  `@Named` to a JPA entity class because produced objects with a default scope
+  (either with `@Dependent` or without specifying a scope) do not under go
+  proxying or bytecode manipulation. In this instance, the entities are still
+  being managed by JPA. CDI is simply exposing them to EL.
+
+  ### [Entity Queries](id:entity_queries)
+  The same mismatch applies to results returned from a JPA query. The results
+  are best wrapped in a CDI bean and exposed that way. Below is an example
+%pre(class='syntax java')
+  :escaped
+    @RequestScoped
+    public class TodaysConferencesQuery {
+        @Produces
+        @Named
+        private List<Conference> todaysConferences;
+
+        @Inject
+        public void init(EntityManager em) {
+            todaysConferences = em
+                .createQuery("select c from Conference c where c.startDate <= current_date() and c.endDate >= current_date()", Conference.class)
+                .getResultList();
+        }
+    }
+:markdown
+  This is a very simple class, queries don't really need to do very much. Each
+  query class encapsulates a single query. That query is populated at the
+  instantiation of the object. In the above class this will happen on the first
+  usage of the managed list of results (todaysConferences).
+

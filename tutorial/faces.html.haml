@@ -3,16 +3,23 @@ layout: base
 title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
 ---
 -# 
-  Each section after the setup will showcase features used in the example
-  For example in the example in it's current state we make use of the 
+  Each section after the setup will showcase features used in the example app
+
+  For example in it's current state we make use of the 
   ViewConfig. Make sure to include the source file and discuss the parts 
   that are specific to Seam 3 modules
 :markdown
-  ## Setup
+  ## [Setup](id:setup)
   There isn't any unique to Seam Faces in setting it up, simply add the maven
-  dependency.
-
-  ## ViewConfig
+  dependency:
+%pre(class='syntax xml')
+  :escaped
+    <dependency>
+        <groupId>org.jboss.seam.faces</groupId>
+        <artifactId>seam-faces</artifactId>
+    </dependency>
+:markdown
+  ## [ViewConfig](id:viewconfig)
 %pre(class='syntax java')
   :escaped
     @ViewConfig

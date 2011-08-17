@@ -1,16 +1,31 @@
 .syntax .add {
-  color: green; }
+    color: green;
+}
+
 .syntax .del {
-  color: red; }
+    color: red;
+}
+
 .syntax .insert {
-  color: green; }
+    color: green;
+}
+
 .syntax .insert-line {
-  background-color: #ccffcc !important; }
+    background-color: #ccffcc !important;
+}
+
 .syntax .remove {
-  color: red; }
+    color: red;
+}
+
 .syntax .remove-line {
-  background-color: #ffcccc !important; }
+    background-color: #ffcccc !important;
+}
+
 .syntax .offset {
-  color: blue; }
+    color: blue;
+}
+
 .syntax .offset-line {
-  background-color: #ccccff !important; }
+    background-color: #ccccff !important;
+}

@@ -2,4 +2,6 @@
 // Copyright (c) 2011 Samuel G. D. Williams. <http://www.oriontransfer.co.nz>
 
 
-Syntax.register('plain',function(brush){brush.push(Syntax.lib.webLink);});
+Syntax.register('plain', function(brush) {
+    brush.push(Syntax.lib.webLink);
+});

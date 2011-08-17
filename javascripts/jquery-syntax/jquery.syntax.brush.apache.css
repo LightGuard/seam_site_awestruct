@@ -1,6 +1,11 @@
 .syntax .apache .tag {
-  color: #0000cc; }
+    color: #0000cc;
+}
+
 .syntax .apache .tag-name {
-  color: blue; }
+    color: blue;
+}
+
 .syntax .apache .tag-name {
-  font-weight: bold; }
+    font-weight: bold;
+}
