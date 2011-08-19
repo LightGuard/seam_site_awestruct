@@ -55,7 +55,6 @@ title: Getting Started With Seam 3 using the Confbuzz Example
             </dependency>
         </dependencies>
     </dependencyManagement>
--# This will change with 3.1.0, we shouldn't need other versions
 %p
   There may be times when a newer version of a module than what is in the
   BOM is needed. It's recommended to use the maven properties to specify the
@@ -63,13 +62,10 @@ title: Getting Started With Seam 3 using the Confbuzz Example
 %pre(class='syntax xml')
   :escaped
     <properties>
-        <seam.bom.version>3.0.0.Final</seam.bom.version>
-        <seam.faces.version>3.0.1.Final</seam.faces.version>
+        <seam.bom.version>3.1.0.Final</seam.bom.version>
         <jboss.javaee6.version>2.0.0.Beta1</jboss.javaee6.version>
-        <seam.validation.version>3.0.0.Final</seam.validation.version>
-        <seam.reports.version>3.0.0.Alpha1</seam.reports.version>
         <jodatime.version>1.6.2</jodatime.version>
-        <arquillian.version>1.0.0.Alpha5</arquillian.version>
+        <arquillian.version>1.0.0.CR2</arquillian.version>
         <richfaces.version>4.0.0.Final</richfaces.version>
     </properties>
 .note

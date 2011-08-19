@@ -2,12 +2,6 @@
 layout: base
 title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
 ---
--# 
-  Each section after the setup will showcase features used in the example app
-
-  For example in it's current state we make use of the 
-  ViewConfig. Make sure to include the source file and discuss the parts 
-  that are specific to Seam 3 modules
 :markdown
   ## [Setup](id:setup)
   There isn't any unique to Seam Faces in setting it up, simply add the maven
@@ -42,4 +36,59 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
         }
     }
 :markdown
-  Fill this portion out
+  The ViewConfig is a type-safe means of specifying meta-data about views. This
+  includes URL rewrites to support a RESTful approach to views, adding security
+  (must bundle Seam Security into the application), designating a login view,
+  configuring "faces-redirect" and others.
+
+  Configuring all these options is done with a static enum inside of an
+  interface. This seemingly odd combination is done to work around a current
+  limitation of CDI 1.0 in that enumerations are not scanned, however this
+  should be fixed in CDI 1.1.
+
+  ### [URL Rewrite](id:urlrewrite)
+  [PrettyFaces](http://ocpsoft.com/prettfaces) is the default technology that
+  enables URL rewritting in Seam Faces. Much more information about it's
+  features and documentation can be found at it's website. In the above example
+  there are two pages with specific mappings and then a list of rules that apply
+  to all pages within the application. Starting from the top the
+  `conferences.xhtml` page is available at the context root. Individual
+  conference pages are available at `/conference/conference_id`, following a
+  typical RESTful pattern. The `#{id}` portion will fill a view parameter which
+  is used as a viewParam in the view's metadata section.
+
+  The last portion applies to each page in the application. It sets `facesfaces-
+  redirect=true` for each page, helping the application avoid the address being
+  different than the current page and also using the POST/Redirect/GET design
+  pattern for form submission. The login view (location to redirect a user to
+  login) is set to the conferences page. Also by using `@AccessDeniedView` a
+  user will be redirected to the login page if their user does not meet security
+  restrictions for a page.
+
+  ## [s:viewAction](id: viewaction)
+  The view action is a simple and elegant means of invoking a method during a JSF phase.
+
+  * APPLY_REQUEST_VALUES
+  * PROCESS_VALIDATIONS
+  * UPDATE_MODEL_VALUES
+  * INVOKE_APPLICATION
+
+  The s:viewAction tag is being used on the conference page to load data for a
+  specific conference instance as shown below
+%pre(class='syntax html')
+  :escaped
+    <f:metadata>
+        <f:viewParam name="id" value="\#{conferenceInstance.id}"/>
+        <s:viewAction action="\#{conferenceInstance.load()}"/>
+    </f:metadata>
+:markdown
+  In the above example it is being used inside of the metadata declaration for
+  the page. The id of the selected conference has been added via PrettyFaces
+  using the rewrite rule discussed above. The method declared in the action
+  section is invoked during the default (`INVOKE_APPLICATION`) phase.
+.warning
+  :markdown
+    To maintain portability with JSF implementations and versions, the action
+    methods must not be used for any navigation.
+-#
+  TODO: We need to use some more features of Faces in the example
