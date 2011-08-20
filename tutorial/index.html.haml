@@ -29,7 +29,8 @@ title: Getting Started With Seam 3 using the Confbuzz Example
   to add the desired modules to a maven project via the pom.xml. The full
   [pom.xml](https://github.com/seam/seam-example-confbuzz/blob/develop/pom.xml
   ) is available on github. Please refer to it to see everything that is going
-  on. Throughout this tutorial we will refer to sections of the pom in-line.
+  on. Throughout this tutorial we will use the Maven build tool and refer to 
+  sections of the pom in-line.
 
   Seam, as well as other JBoss projects, have a Build of Materials (BOM) pom
   that lists the dependencies and versions of a particular release. This is
@@ -79,7 +80,7 @@ title: Getting Started With Seam 3 using the Confbuzz Example
     [SEAMREMOTING-38](https://issues.jboss.org/browse/SEAMREMOTING-38) for
     some background.
 :markdown
-  Because Seam 3 is a collection of CDI modules and the Java EE 6 programing 
+  Because Seam 3 is a collection of CDI modules and the Java EE 6 programming 
   model will be used, the following dependency will add the API classes for 
   compilation. They will not be needed for runtime as the application server
   will supply them so the provided scope is used.  
@@ -94,12 +95,12 @@ title: Getting Started With Seam 3 using the Confbuzz Example
     </dependency>
 :markdown
   The remaining portions of the pom.xml file should be familiar to those who
-  have used maven, it covers the actual dependencies used and sets up some
+  have used Maven, it covers the actual dependencies used and sets up some
   configuration for various plugins.
 
   The last setup step for the project is of course to create directories and
   configuration files (thankfully in Java EE 6, these are very small files
-  and can often be left out or empty!). Creating the directory structure is
+  and can often be left out or empty). Creating the directory structure is
   very simple:
 %pre(class='syntax plain')
   :plain
@@ -110,8 +111,8 @@ title: Getting Started With Seam 3 using the Confbuzz Example
     mkdir -p src/test/resources
 :markdown
   ### [Configuration Files](id:configuration)
-  This is a Java EE 6 application, configuration files are (mostly) a thing of
-  the past. There are a few things that need to be configured though.
+  This is a Java EE 6 application. Configuration files are (mostly) a thing of
+  the past. There are a few things that need to be configured.
 
   #### [beans.xml](beans)
   The beans.xml file is a CDI marker file (which also may contain some simple
@@ -139,7 +140,7 @@ title: Getting Started With Seam 3 using the Confbuzz Example
   the transactions at the start and end of a request.
 :markdown
   #### [faces-config.xml](faces-config)
-  The basic faces-config.xml as in previous applications, but with one major
+  A faces-config.xml should be included just like in previous Seam and JSF applications, but with one major
   difference: it's empty!
 %pre(class='syntax xml')
   :escaped
