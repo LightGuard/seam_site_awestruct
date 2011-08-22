@@ -4,7 +4,7 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
 ---
 :markdown
   ## [Setup](id:setup)
-  There isn't any unique to Seam Faces in setting it up, simply add the maven
+  There isn't any unique setup required for Seam Faces. Simply add the maven
   dependency:
 %pre(class='syntax xml')
   :escaped
@@ -47,9 +47,9 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
   should be fixed in CDI 1.1.
 
   ### [URL Rewrite](id:urlrewrite)
-  [PrettyFaces](http://ocpsoft.com/prettfaces) is the default technology that
-  enables URL rewritting in Seam Faces. Much more information about it's
-  features and documentation can be found at it's website. In the above example
+  [PrettyFaces](http://ocpsoft.com/prettyfaces) is the default technology that
+  enables URL rewriting in Seam Faces. Much more information about its
+  features and documentation can be found at its website. In the above example,
   there are two pages with specific mappings and then a list of rules that apply
   to all pages within the application. Starting from the top the
   `conferences.xhtml` page is available at the context root. Individual
@@ -57,8 +57,8 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
   typical RESTful pattern. The `#{id}` portion will fill a view parameter which
   is used as a viewParam in the view's metadata section.
 
-  The last portion applies to each page in the application. It sets `facesfaces-
-  redirect=true` for each page, helping the application avoid the address being
+  The last portion applies to every page in the application. It sets `faces-
+  redirect=true` for every page. This helps the application avoid the address being
   different than the current page and also using the POST/Redirect/GET design
   pattern for form submission. The login view (location to redirect a user to
   login) is set to the conferences page. Also by using `@AccessDeniedView` a
@@ -66,14 +66,14 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Faces
   restrictions for a page.
 
   ## [s:viewAction](id: viewaction)
-  The view action is a simple and elegant means of invoking a method during a JSF phase.
+  The view action is a simple and elegant means of invoking a method during any of the following JSF phases.
 
   * APPLY_REQUEST_VALUES
   * PROCESS_VALIDATIONS
   * UPDATE_MODEL_VALUES
   * INVOKE_APPLICATION
 
-  The s:viewAction tag is being used on the conference page to load data for a
+  The s:viewAction tag is used on the conference page to load data for a
   specific conference instance as shown below
 %pre(class='syntax html')
   :escaped

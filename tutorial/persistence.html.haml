@@ -24,7 +24,7 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Persistence
   The biggest drawback of using the extended persistence unit from JPA is that
   it can only be used within EJBs. Of course some may say with Jave EE 6 why
   wouldn't you use EJBs? That of course is another discussion for another time
-  and out of scope for this tutorial. To over come this limitation and use
+  and out of scope for this tutorial. To overcome this limitation and use
   the persistence unit on POJOs (and have it scoped to something longer than
   a request) it is best to use a Seam Managed Persistence Unit. Setting this
   up is quite easy and only requires a couple more annotations besides the
@@ -46,7 +46,8 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Persistence
   EE container environment (such as a servlet container) as Seam Persistence
   will bootstrap JPA. **There is one small gotcha with this, however, the scoping
   annotation doesn't scope the EntityManagerFactory in this case, it scopes the
-  EntityManager that the EntityManagerFactory creates.**
+  EntityManager that the EntityManagerFactory creates. So make sure the type declared
+  is an EntityManagerFactory and not an EntityManager**
 
   ## Accessing and querying entities
   Any database backed application must make use of the data objects and also
