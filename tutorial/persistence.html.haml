@@ -2,42 +2,74 @@
 layout: base
 title: Getting Started With Seam 3 using the Confbuzz Example -- Persistence
 ---
-:markdown
-  ## [Setup](id:setup)
-  Add this to pom.xml:
-%pre(class='syntax xml')
-  :escaped
-    <dependency>
-        <groupId>org.jboss.seam.persistence</groupId>
-        <artifactId>seam-persistence</artifactId>
-        <version>${seam.persistence.version}</version>
-    </dependency>
+.configuration.ee6
+  :markdown
+    ## [Setup](id:setup)
+    Confbuzz works with data that must be persisted from one invocation of the
+    application to another. The standard means of doing this within a Java EE 6
+    application is through JPA. There is one
+    configuration file needed to enable JPA in the application:
+  %span.listing_title persistence.xml
+  %pre.syntax.xml
+    :escaped
+      <?xml version="1.0" encoding="UTF-8"?>
+      <persistence xmlns="http://java.sun.com/xml/ns/persistence"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+                   version="2.0">
+          <persistence-unit name="confbuzz">
+              <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
+              <properties>
+                  <!-- Properties for Hibernate (default provider for JBoss AS) -->
+                  <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+                  <property name="hibernate.show_sql" value="true"/>
+                  <!-- Only format when you need to debug, because it slows things down -->
+                  <property name="hibernate.format_sql" value="false"/>
+              </properties>
+          </persistence-unit>
+      </persistence>
+.configuration.maven
+  Seam provides a module to aid with persistence, and to help plug some of the
+  holes that still exist in the platform. Add the following XML stanza to
+  pom.xml to add Seam Persistence:
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.jboss.seam.persistence</groupId>
+          <artifactId>seam-persistence</artifactId>
+          <version>${seam.persistence.version}</version>
+      </dependency>
 :markdown
   There is no setup for Seam Persistence when used within a Java EE 6 
-  app server. As [noted previously](../index.html#beans) if declarative
+  app server. As [noted previously](../index.html#beans), if declarative
   transaction management for non EJB components is desired, the intercepter
   must be activated in the beans.xml file. Please see the 
   [reference documentation](http://docs.jboss.org/seam/3/persistence/latest/reference/en-US/html/persistence.html)
   for setup if not running in a Java EE 6 application server.
 
   ### [Persistence Context Producer](id:pcp)
-  The biggest drawback of using the extended persistence unit from JPA is that
-  it can only be used within EJBs. Of course some may say with Jave EE 6 why
-  wouldn't you use EJBs? That of course is another discussion for another time
-  and out of scope for this tutorial. To overcome this limitation and use
-  the persistence unit on POJOs (and have it scoped to something longer than
-  a request) it is best to use a Seam Managed Persistence Unit. Setting this
-  up is quite easy and only requires a couple more annotations besides the
-  standard `@Produces` and scope annotations:
-%pre(class='syntax java')
-  :escaped
-    public class PersistenceConfiguration {
-      @Produces
-      @ExtensionManaged
-      @ConversationScoped
-      @PersistenceUnit
-      private EntityManagerFactory primary;
-    }
+  JPA has the idea of an extended persistence context, meaning an
+  `EntityManager` which lives longer than one request. The biggest drawback of
+  using the extended persistence unit from JPA is that it can only be used
+  within EJBs. Of course some may say with Jave EE 6 why wouldn't you use EJBs?
+  That of course is another discussion for another time and out of scope for
+  this tutorial. To overcome this limitation and use the persistence unit on
+  POJOs (and have it scoped to something longer than a request) it is best to
+  use a Seam Managed Persistence Unit. Setting this up is quite easy and only
+  requires a couple more annotations besides the standard `@Produces` and scope
+  annotations:
+.code
+  %span.listing_title PersistenceConfiguration.java
+  %pre.syntax.java
+    :escaped
+      public class PersistenceConfiguration {
+        @Produces
+        @ExtensionManaged
+        @ConversationScoped
+        @PersistenceUnit
+        private EntityManagerFactory primary;
+      }
 :markdown
   This is a standard producer field declaration with two additional annotations.
   The |@ExtensionManaged| and |@PersistenceUnit| annotations are different. The
@@ -56,55 +88,132 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Persistence
   technologies typically rely on proxying classes or bytecode manipulation. 
   Often they do not work correctly this way. Because of this, it is best to 
   wrap the JPA entities in another CDI managed bean. Entity instances and 
-  queries solve this problem and are used in Confbuzz.
+  queries solve this problem and are used in Confbuzz. Of course Entity Instance
+  and Query classes won't work without the JPA entities they represent. Below is
+  the JPA entity Conference
+.code
+  %span.listing_title Conference.java
+  %pre.syntax.java
+    :escaped
+      @Entity @Veto
+      public class Conference {
 
+          private Long id;
+          private Long version;
+          private String name;
+          private Date startDate;
+          private Date endDate;
+          private String location;
+          private Set<String> tags;
+          private String tagLine;
+
+          @Id @GeneratedValue
+          public Long getId() { return id; }
+
+          public void setId(Long id) { this.id = id; }
+
+          @Version
+          public Long getVersion() { return version; }
+
+          public void setVersion(Long version) { this.version = version; }
+
+          @NotNull
+          public String getName() { return name; }
+
+          public void setName(String name) { this.name = name; }
+
+          @NotNull
+          public Date getStartDate() { return startDate; }
+
+          public void setStartDate(Date startDate) { this.startDate = startDate; }
+
+          @NotNull
+          public Date getEndDate() { return endDate; }
+
+          public void setEndDate(Date endDate) { this.endDate = endDate; }
+
+          @NotNull
+          public String getLocation() { return location; }
+
+          public void setLocation(String location) { this.location = location; }
+
+          @ElementCollection
+          public Set<String> getTags() { return tags; }
+
+          public void setTags(Set<String> tags) { this.tags = tags; }
+
+          public String getTagLine() { return tagLine; }
+
+          public void setTagLine(String tagLine) { this.tagLine = tagLine; }
+
+          @Override
+          public boolean equals(Object o) {
+              if (this == o) return true;
+              if (o == null || getClass() != o.getClass()) return false;
+
+              Conference that = (Conference) o;
+
+              if (id != null ? !id.equals(that.id) : that.id != null) return false;
+              if (version != null ? !version.equals(that.version) : that.version != null) return false;
+
+              return true;
+          }
+
+          @Override
+          public int hashCode() {
+              int result = id != null ? id.hashCode() : 0;
+              result = 31 * result + (version != null ? version.hashCode() : 0);
+              return result;
+          }
+      }
+.note
+  :markdown
+    The only thing of note in the entity is the `@Veto` annotation. This comes
+    from Seam Solder (which is a transitive dependency of each Seam module. It
+    prohibits the annotated class from being registered with the `BeanManager`.
+    This isn't required, but will ensure developers do not use the JPA entity
+    directly and go through the Entity Instance class producing the entity.  
+:markdown
   ### [Entity Instance](id:entity_instance)
   An Entity Instance is simply a CDI wrapper around a JPA entity with the
   ability to load a specific instance of the JPA entity it manages. The class
   below demonstrates a simple Entity Instance:
-%pre(class='syntax java')
-  :escaped
-    @Named
-    @ConversationScoped
-    public class ConferenceInstance implements Serializable {
+.code
+  %span.listing_title ConferenceInstance.java
+  %pre.syntax.java
+    :escaped
+      @Named
+      @ConversationScoped
+      public class ConferenceInstance implements Serializable {
 
-        private Conference instance;
+          private Conference instance;
 
-        private Long id;
+          private Long id;
 
-        private EntityManager em;
-        
-        @Inject
-        public void init(final EntityManager em) {
-            this.instance = new Conference();
-            this.em = em;
-        }
+          private EntityManager em;
+          
+          @Inject
+          public void init(final EntityManager em) {
+              this.instance = new Conference();
+              this.em = em;
+          }
 
-        public Long getId() {
-            return id;
-        }
+          public Long getId() { return id; }
 
-        public void setId(Long id) {
-            this.id = id;
-        }
-        
-        public void load() {
-            instance = em.find(Conference.class, id);
-            if (instance == null) {
-                throw new EntityNotFoundException("No conference with id " + id);
-            }
-        }
+          public void setId(Long id) { this.id = id; }
+          
+          public void load() {
+              instance = em.find(Conference.class, id);
+              if (instance == null) {
+                  throw new EntityNotFoundException("No conference with id " + id);
+              }
+          }
 
-        @Produces
-        @Named
-        public Conference getConference() {
-            return this.instance;
-        }
+          @Produces @Named
+          public Conference getConference() { return this.instance; }
 
-        public void set(@Observes Conference instance) {
-            this.instance = instance;
-        }
-    }
+          public void set(@Observes Conference instance) { this.instance = instance; }
+      }
 :markdown
   This class could be expanded to manage persisting and removing the managed
   entity if desired. An instance will become managed by setting the id of the
@@ -119,24 +228,152 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Persistence
   ### [Entity Queries](id:entity_queries)
   The same mismatch applies to results returned from a JPA query. The results
   are best wrapped in a CDI bean and exposed that way. Below is an example
-%pre(class='syntax java')
-  :escaped
-    @RequestScoped
-    public class TodaysConferencesQuery {
-        @Produces
-        @Named
-        private List<Conference> todaysConferences;
+.code
+  %span.listing_title TodaysConferenceQuery.java
+  %pre.syntax.java
+    :escaped
+      @RequestScoped
+      public class TodaysConferencesQuery {
+          @Produces
+          @Named
+          private List<Conference> todaysConferences;
 
-        @Inject
-        public void init(EntityManager em) {
-            todaysConferences = em
-                .createQuery("select c from Conference c where c.startDate <= current_date() and c.endDate >= current_date()", Conference.class)
-                .getResultList();
-        }
-    }
+          @Inject
+          public void init(EntityManager em) {
+              todaysConferences = em
+                  .createQuery("select c from Conference c where c.startDate <= current_date() and c.endDate >= current_date()", Conference.class)
+                  .getResultList();
+          }
+      }
 :markdown
   This is a very simple class, queries don't really need to do very much. Each
   query class encapsulates a single query. That query is populated at the
   instantiation of the object. In the above class this will happen on the first
   usage of the managed list of results (todaysConferences).
+
+  The rest of the two view pages can be fleshed out now with the data from the
+  JPA entities and their corresponding queries and Entity Instance managers.
+  Add the following XHTML code into the conferences.xhtml view inside of the
+  h:form element.
+.code
+  %span.listing_title conferences.xhtml
+  %pre.syntax.html
+    :escaped
+      <rich:tabPanel id="conferencePnl" switchType="ajax">
+          <rich:tab id="todayTab" header="Today's Conferences">
+              <a4j:repeat id="todayConferenceList" value="\#{todaysConferences}" var="_conference">
+                  <div>
+                      <h:link id="conferenceLink" value="\#{_conference.name}" outcome="/conference.xhtml">
+                          <f:param name="id" value="\#{_conference.id}"/>
+                      </h:link>
+                      <br/>
+                      \#{_conference.location}<br/>
+                      \#{_conference.startDate} - \#{_conference.endDate}
+                  </div>
+              </a4j:repeat>
+          </rich:tab>
+          <rich:tab id="allConferencesTab" header="All Conferences">
+              <a4j:repeat id="allConferenceList" value="\#{allConferences}" var="_conference">
+                  <div>
+                      <h:link id="conferenceLink" value="\#{_conference.name}" outcome="/conference.xhtml">
+                          <f:param name="id" value="\#{_conference.id}"/>
+                      </h:link>
+                      <br/>
+                      \#{_conference.location}<br/>
+                      \#{_conference.startDate} - \#{_conference.endDate}<br/>
+                      \#{_conference.tags}
+                  </div>
+              </a4j:repeat>
+          </rich:tab>
+      </rich:tabPanel>
+:markdown
+  The code snippet below should be added to conference.xhtml in the div with the
+  class "column span-17"
+.code
+  %span.listing_title conference.xhtml
+  %pre.syntax.html
+    :escaped
+      <h1>\#{conference.name}</h1>
+      <h2>\#{conference.tagLine}</h2>
+      <div class="block">
+          <div class="column span-11">
+              <h:outputText value="\#{conference.startDate} - \#{conference.endDate}" />
+          </div>
+          <div class="column span-12">
+              \#{conference.location}
+              <br />
+              \#{conference.tags}
+          </div>
+      </div>
+      <h2>Speakers</h2>
+      <h2>Attendees</h2>
+:markdown
+  Notice RichFaces is being used. The dependencies and the RichFaces BOM must be
+  added to pom before deploying the application to avoid an exception
+.configuration.maven 
+  %span.listing_title pom.xml (dependencyManagement section)
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.richfaces</groupId>
+          <artifactId>richfaces-bom</artifactId>
+          <version>${richfaces.version}</version>
+          <type>pom</type>
+          <scope>import</scope>
+      </dependency>
+  %span.listing_title pom.xml (dependencies section)
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.richfaces.ui</groupId>
+          <artifactId>richfaces-components-ui</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.richfaces.core</groupId>
+          <artifactId>richfaces-core-impl</artifactId>
+      </dependency>
+:markdown
+  A user can now see all the conferences in the system, and can drill down to
+  view the details of a specific conference. There is a small problem though.
+  How does the application load up the correct conference with a user clicks on
+  the conference link? To do this, the application uses a tag from Seam Faces
+  called viewAction. The viewAction tag works in concert with the [URL
+  rewriting](../faces#urlrewrite) feature discussed earlier. The following XHTML
+  code should be added to the conference.xhtml page within the metadata facelets
+  definition.
+.code
+  %span.listing_title conference.xhtml
+  %pre.syntax.html
+    :escaped
+      <f:metadata>
+          <f:viewParam name="id" value="\#{conferenceInstance.id}"/>
+          <s:viewAction action="\#{conferenceInstance.load()}"/>
+      </f:metadata>
+:markdown
+  ## [s:viewAction](id: viewaction)
+  The view action is a simple and elegant means of invoking a method during any of the following JSF phases.
+
+  * APPLY_REQUEST_VALUES
+  * PROCESS_VALIDATIONS
+  * UPDATE_MODEL_VALUES
+  * INVOKE_APPLICATION
+
+  In the above example it is being used inside of the metadata declaration for
+  the page. The id of the selected conference has been added via PrettyFaces
+  using the rewrite rule discussed above. The method declared in the action
+  section is invoked during the default (`INVOKE_APPLICATION`) phase.
+.warning
+  :markdown
+    To maintain portability with JSF implementations and versions, the action
+    methods must not be used for any navigation.
+:markdown
+  The users can now view all the conferences in the database, but they may
+  decide to become members of the site and update their own profiles with
+  speaking engagements, or be listed as an attendee of a conference. [The site is
+  going to need some security to handle some of these actions](../security).
+-#
+  Should we mention, or use instead, named queries and place the annotation on
+  the query class? Using named queries with the annotation (or possibly through
+  xml) we could make the Persistence Plugin in Forge capable of generating Query
+  classes using the named query
 

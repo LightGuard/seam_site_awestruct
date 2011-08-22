@@ -6,93 +6,78 @@ title: Getting Started With Seam 3 using the Confbuzz Example
   # Getting Started with Seam 3 using the ConfBuzz Example
   ## [Introduction](id:intro)
 
-  This tutorial will introduce many of the Seam 3 modules by building an
-  example from scratch! A basic understand of CDI is expected before
-  continuing with the tutorial. The modules discussed are:
+  This tutorial will introduce many of the Seam 3 modules by building an example
+  from scratch! Features of the application pertain to the following modules:
 
-  * [Seam Faces](faces)
-  * [Seam Persistence](persistence)
-  * [Seam Catch](catch)
-  * [Seam Security](security)
-  * [Seam Config](config)
-  * [Typesafe Logging](logging)
+  * Seam Faces
+  * Seam Persistence
+  * Seam Catch
+  * Seam Security
+  * Seam Config
 
-  Each module will be covered in it's own section / chapter. Please
-  skip ahead as needed. The code for this project is available at
-  [github](https://github.com/seam/seam-example-conffbuzz). For more
-  information about a particular module and / or it's usage please see the
-  reference documentation for that module, found at <http://docs.jboss.org/seam/3/>
+  Each feature (sure as presentation, persistence, security, etc.) will be
+  covered in it's own section / chapter. Please skip ahead as needed. The code
+  for this project is available at [github](https://github.com/seam/seam-example-
+  conffbuzz). For more information about a particular module and / or it's usage
+  please see the reference documentation for that module, found at
+  <http://docs.jboss.org/seam/3/>
+
+  ## [Prerequisites](id:prereq)
+  This tutorial makes use of Java EE 6 features, which maintains a base level
+  of Java SE 6 for a runtime. It also assumes the reader is familiar with
+  basic concepts of CDI (Contexts and Dependency Injection for Java EE, aka
+  JSR 299), JPA (Java Persistence API), and JSF 2.0 (Java Server Faces) and
+  Apache Maven. With the exception of Apache Maven, all the above technologies
+  are core Java EE 6.
+
+  The tutorial does not make use of any particular IDE or tooling. Such
+  additional developer aids may come in handy during development. Please consult
+  the IDE / tool of choice for any additional features that may pertain to CDI
+  and / or Java EE 6 support.
 
   ## [Project Setup](id:project_setup) 
   All Seam 3 modules are kept in an artifact repository, specifically the
   JBoss Nexus Repository. The easiest way to get started with Seam 3 is
-  to add the desired modules to a maven project via the pom.xml. The full
+  to add the desired modules to a Maven project via the pom.xml. The full
   [pom.xml](https://github.com/seam/seam-example-confbuzz/blob/develop/pom.xml
-  ) is available on github. Please refer to it to see everything that is going
-  on. Throughout this tutorial we will use the Maven build tool and refer to 
+  ) is available on github. Please refer to it to see the full configuration.
+  Throughout this tutorial we will use the Maven build tool and refer to
   sections of the pom in-line.
 
   Seam, as well as other JBoss projects, have a Build of Materials (BOM) pom
   that lists the dependencies and versions of a particular release. This is
-  the easiest way to get the correct jars and versions together (we'll also be
-  making use of RichFaces, so we're including it's BOM also):
-%pre(class='syntax xml')
-  :escaped
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jboss.seam</groupId>
-                <artifactId>seam-bom</artifactId>
-                <version>${seam.bom.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.richfaces</groupId>
-                <artifactId>richfaces-bom</artifactId>
-                <version>${richfaces.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-%p
-  There may be times when a newer version of a module than what is in the
-  BOM is needed. It's recommended to use the maven properties to specify the
-  version that will be used:
-%pre(class='syntax xml')
-  :escaped
-    <properties>
-        <seam.bom.version>3.1.0.Final</seam.bom.version>
-        <jboss.javaee6.version>2.0.0.Beta1</jboss.javaee6.version>
-        <jodatime.version>1.6.2</jodatime.version>
-        <arquillian.version>1.0.0.CR2</arquillian.version>
-        <richfaces.version>4.0.0.Final</richfaces.version>
-    </properties>
-.note
-  :markdown
-    Jodatime is included because it will be used directly,
-    however, if Seam with Glassfish 3.1 is used, it must be included
-    due to [GLASSFISH-16318](http://java.net/jira/browse/GLASSFISH-16318).
-    This should be fixed in Glassfish 3.1.1 and 3.2. It also needs
-    to be included when using JBoss AS7 as Seam International
-    uses it, things don't work quite right if it's not there see
-    [SEAMREMOTING-38](https://issues.jboss.org/browse/SEAMREMOTING-38) for
-    some background.
+  the easiest way to get the correct jars and versions together:
+.configuration.maven
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependencyManagement>
+          <dependencies>
+              <dependency>
+                  <groupId>org.jboss.seam</groupId>
+                  <artifactId>seam-bom</artifactId>
+                  <version>${seam.bom.version}</version>
+                  <type>pom</type>
+                  <scope>import</scope>
+              </dependency>
+          </dependencies>
+      </dependencyManagement>
 :markdown
   Because Seam 3 is a collection of CDI modules and the Java EE 6 programming 
   model will be used, the following dependency will add the API classes for 
   compilation. They will not be needed for runtime as the application server
   will supply them so the provided scope is used.  
-%pre(class='syntax xml')
-  :escaped
-    <dependency>
-        <groupId>org.jboss.spec</groupId>
-        <artifactId>jboss-javaee-6.0</artifactId>
-        <version>${jboss.javaee6.version}</version>
-        <type>pom</type>
-        <scope>provided</scope>
-    </dependency>
+.configuration.maven
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.jboss.spec</groupId>
+          <artifactId>jboss-javaee-6.0</artifactId>
+          <version>${jboss.javaee6.version}</version>
+          <type>pom</type>
+          <scope>provided</scope>
+      </dependency>
 :markdown
   The remaining portions of the pom.xml file should be familiar to those who
   have used Maven, it covers the actual dependencies used and sets up some
@@ -102,99 +87,29 @@ title: Getting Started With Seam 3 using the Confbuzz Example
   configuration files (thankfully in Java EE 6, these are very small files
   and can often be left out or empty). Creating the directory structure is
   very simple:
-%pre(class='syntax plain')
-  :plain
-    mkdir -p src/main/java/seam/example/confbuzz/model
-    mkdir -p src/main/resources
-    mkdir -p src/main/webapp/WEB-INF
-    mkdir -p src/test/java/seam/example/confbuzz/test
-    mkdir -p src/test/resources
+.configuration
+  %span.listing_title Console
+  %pre.syntax.plain
+    :plain
+      mkdir -p src/main/java/seam/example/confbuzz/model
+      mkdir -p src/main/resources
+      mkdir -p src/main/webapp/WEB-INF
+      mkdir -p src/test/java/seam/example/confbuzz/test
+      mkdir -p src/test/resources
 :markdown
-  ### [Configuration Files](id:configuration)
-  This is a Java EE 6 application. Configuration files are (mostly) a thing of
-  the past. There are a few things that need to be configured.
-
-  #### [beans.xml](beans)
+  ### [beans.xml](beans)
   The beans.xml file is a CDI marker file (which also may contain some simple
-  configuration). It resides at /WEB-INF/beans.xml:
-%pre(class='syntax xml')
-  :escaped
-    <beans xmlns="http://java.sun.com/xml/ns/javaee"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-              http://java.sun.com/xml/ns/javaee
-              http://docs.jboss.org/cdi/beans_1_0.xsd">
-      <interceptors>
-          <class>org.jboss.seam.transaction.TransactionInterceptor</class>
-      </interceptors>
-    </beans>
+  configuration). It resides at src/main/webapp/WEB-INF/beans.xml:
+.configuration.ee6
+  %span.listing_title beans.xml
+  %pre.syntax.xml
+    :escaped
+      <beans xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation=" http://java.sun.com/xml/ns/javaee http://docs.jboss.org/cdi/beans_1_0.xsd">
+      </beans>
 :markdown
-  The only bit of configuration here is telling CDI to enable the 
-  TransactionInterceptor. This is necessary for using declaritive transactions.
-  More information about declarative transaction management can be found in
-  [the persistence reference guide](http://docs.jboss.org/seam/3/persistence/latest/reference/en-US/html/persistence.html#d0e140).
-.warning
-  If Seam Faces is being used, do not use declarative transaction management
-  from Seam Persistence on methods that are run through JSF (such as action
-  methods and other methods run by the JSF application, Seam Faces will manage
-  the transactions at the start and end of a request.
-:markdown
-  #### [faces-config.xml](faces-config)
-  A faces-config.xml should be included just like in previous Seam and JSF applications, but with one major
-  difference: it's empty!
-%pre(class='syntax xml')
-  :escaped
-    <faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
-
-    </faces-config>
-:markdown
-  #### [web.xml](web)
-  This is another file that can be empty. For this application, however, there
-  are some small changes:
-%pre(class='syntax xml')
-  :escaped
-    <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-      <servlet>
-          <servlet-name>Faces Servlet</servlet-name>
-          <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-          <load-on-startup>1</load-on-startup>
-      </servlet>
-      <servlet-mapping>
-          <servlet-name>Faces Servlet</servlet-name>
-          <url-pattern>*.xhtml</url-pattern>
-      </servlet-mapping>
-      <session-config>
-          <session-timeout>
-              30
-          </session-timeout>
-      </session-config>
-    </web-app> 
-:markdown
-  These changes are to tell JSF to use *.xhtml as the mapping (instead of
-  *.jsf and /faces/*) and to set the session timeout.
-
-  #### [persistence.xml](persistence)
-  The standard persistence.xml file here, nothing specific to Seam 3.
-%pre(class='syntax xml')
-  :escaped
-    <?xml version="1.0" encoding="UTF-8"?>
-    <persistence xmlns="http://java.sun.com/xml/ns/persistence"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
-                 version="2.0">
-        <persistence-unit name="confbuzz">
-            <jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
-            <properties>
-                <!-- Properties for Hibernate (default provider for JBoss AS) -->
-                <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
-                <property name="hibernate.show_sql" value="true"/>
-                <!-- Only format when you need to debug, because it slows things down -->
-                <property name="hibernate.format_sql" value="false"/>
-            </properties>
-        </persistence-unit>
-    </persistence>
+  There is no configuration needed at this time, it's only a marker to enable
+  CDI for the archive. There is now a simple application shell, ready for some
+  fleshing out. [Setting up the view is next](view).
 

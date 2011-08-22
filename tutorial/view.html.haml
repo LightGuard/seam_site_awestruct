@@ -1,0 +1,220 @@
+---
+layout: base
+title: Getting Started With Seam 3 using the Confbuzz Example -- View
+---
+:markdown
+  With the basics configured and the structure in place, the application is
+  starting to take shape. However, what good does an empty application serve?
+  The application must be able to display content to the users! JSF is used for
+  this in a Java EE 6 application. Seam Faces adds some utility and features to
+  vanilla JSF 2.0 which will be used.  
+  
+  ## [Setup](id:setup)
+  There are two small matters of configuration for the JSF 2.0 setup that need
+  to be taken care first
+
+  ### [faces-config.xml](faces-config)
+  A faces-config.xml (src/main/webapp/WEB-INF/faces-config) should be included
+  just like in previous Seam and JSF applications, but with one major
+  difference: it's empty!
+.configuration.ee6
+  %span.listing_title faces-config.xml
+  %pre.syntax.xml
+    :escaped
+      <faces-config version="2.0" xmlns="http://java.sun.com/xml/ns/javaee"
+                xmlns:xi="http://www.w3.org/2001/XInclude"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd">
+      </faces-config>
+:markdown
+  ### [web.xml](web)
+  This is another file that can be empty. For this application, however, there
+  are some small changes. These changes are to tell JSF to use *.xhtml as the
+  mapping (instead of *.jsf and /faces/*). Place it at src/main/webapp/WEB-INF/web.xml
+.configuration.ee6
+  %span.listing_title web.xml
+  %pre.syntax.xml
+    :escaped
+      <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+        <servlet>
+            <servlet-name>Faces Servlet</servlet-name>
+            <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+            <load-on-startup>1</load-on-startup>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>Faces Servlet</servlet-name>
+            <url-pattern>*.xhtml</url-pattern>
+        </servlet-mapping>
+      </web-app> 
+:markdown
+  Lastly, add the dependency for Seam Faces:
+.configuration.maven
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.jboss.seam.faces</groupId>
+          <artifactId>seam-faces</artifactId>
+      </dependency>
+:markdown
+  With configuration of the presentation framework out of the way, view pages
+  can be created and the application will have a face once it's deployed!
+
+  ## [Templates](id:templates)
+  It's best practice in JSF to create a template for the view pages and only
+  fill out content for the subsequent pages. Below is the main template
+  (src/main/webapp/layout/mainLayout.xhtml) for Confbuzz, which will continue to
+  be built up as new features and Seam modules are added.
+.code
+  %span.listing_title mainLayout.xhtml
+  %pre.syntax.html
+    :escaped
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+      <html xmlns="http://www.w3.org/1999/xhtml"
+            xmlns:ui="http://java.sun.com/jsf/facelets"
+            xmlns:f="http://java.sun.com/jsf/core"
+            xmlns:h="http://java.sun.com/jsf/html"
+            lang="en" xml:lang="en">
+      <f:view>
+          <ui:insert name="metadata"/>
+          <h:head>
+              <link href="\#{facesContext.externalContext.requestContextPath}/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" />
+
+              <link href="\#{facesContext.externalContext.requestContextPath}/stylesheets/print.css" media="print" rel="stylesheet" type="text/css" />
+              <!--[if IE]>
+                <link href="\#{facesContext.externalContext.requestContextPath}/stylesheets/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
+              <![endif]-->
+              <title>ConfBuzz <ui:insert name="title"/></title>
+          </h:head>
+          <h:body>
+              <div class="container">
+                  <div class="block">
+                      <div class="column span-24">
+                          <h:messages id="messages" />
+                      </div>
+                  </div>
+                  <ui:insert name="content"/>
+              </div>
+          </h:body>
+      </f:view>
+      </html>
+:markdown
+  This is a pretty straight forward JSF template making use of facelets. There
+  is a spot for adding JSF metadata on line 11, line 19 contains a spot to add
+  to the title of the document, each page will have a location for messages to
+  user as line 25 includes the h:messages tag, and lastly, content will be
+  placed where line 28 currently stands.
+
+  Next, place holder pages for the overview of conferences and an in depth view
+  of a conference will be created (src/main/webapp), again, these will be
+  fleshed out more as the tutorial moves along.
+.code
+  %span.listing_title conferences.xhtml
+  %pre.syntax.html
+    :escaped
+      <?xml version="1.0" encoding="UTF-8"?>
+      <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                      xmlns:h="http://java.sun.com/jsf/html"
+                      xmlns:f="http://java.sun.com/jsf/core"
+                      xmlns:a4j="http://richfaces.org/a4j"
+                      xmlns:rich="http://richfaces.org/rich"
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      template="layout/mainLayout.xhtml">
+          <ui:define name="content">
+              <div class="block">
+                  <div class="column span-17">
+                      <h:form id="tabPnlForm">
+                      </h:form>
+                  </div>
+              </div>
+          </ui:define>
+      </ui:composition>
+:markdown
+  Also be sure to create the detail page for a conference:
+.code
+  %span.listing_title conference.xhtml
+  %pre.syntax.html
+    :escaped
+      <?xml version="1.0" encoding="UTF-8"?>
+      <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                      xmlns:h="http://java.sun.com/jsf/html"
+                      xmlns:f="http://java.sun.com/jsf/core"
+                      xmlns="http://www.w3.org/1999/xhtml"
+                      xmlns:s="http://jboss.org/seam/faces"
+                      template="layout/mainLayout.xhtml">
+          <ui:define name="metadata">
+          </ui:define>
+          <ui:define name="content">
+              <div class="block">
+                  <div class="column span-17">
+                  </div>
+              </div>
+          </ui:define>
+      </ui:composition>
+:markdown
+  The application is starting to take shape and can now be deployed and viewed
+  with a browser!
+
+  ### [ViewConfig](id:viewconfig)
+  With any web based application navigation must be taken into consideration,
+  and also bookmarking. Seam Faces is able to take care of this using a
+  ViewConfig class.
+.code
+  %span.listing_title ConfbuzzViewConfig.java
+  %pre.syntax.java
+    :escaped
+      @ViewConfig
+      public interface BuzzConfViewConfig {
+          static enum Views {
+              @UrlMapping(pattern = "/")
+              @ViewPattern("/conferences.xhtml")
+              ROOT,
+              
+              @UrlMapping(pattern = "/conference/#{id}")
+              @ViewPattern("/conference.xhtml")
+              CONFERENCE,
+
+              @FacesRedirect
+              @ViewPattern("/*")
+              @AccessDeniedView("/conferences.xhtml")
+              @LoginView("/conferences.xhtml")
+              ALL
+          }
+      }
+:markdown
+  The ViewConfig is a type-safe means of specifying meta-data about views. This
+  includes URL rewrites to support a RESTful approach to views, adding security
+  (must bundle Seam Security into the application), designating a login view,
+  configuring "faces-redirect" and others.
+
+  Configuring all these options is done with a static enum inside of an
+  interface. This seemingly odd combination is done to work around a current
+  limitation of CDI 1.0 in that enumerations are not scanned, however this
+  should be fixed in CDI 1.1.
+
+  ### [URL Rewrite](id:urlrewrite)
+  [PrettyFaces](http://ocpsoft.com/prettyfaces) is the default technology that
+  enables URL rewriting in Seam Faces. Much more information about its
+  features and documentation can be found at its website. In the above example,
+  there are two pages with specific mappings and then a list of rules that apply
+  to all pages within the application. Starting from the top the
+  `conferences.xhtml` page is available at the context root. Individual
+  conference pages are available at `/conference/conference_id`, following a
+  typical RESTful pattern. The `\#{id}` portion will fill a view parameter which
+  is used as a viewParam in the view's metadata section.
+
+  The last portion applies to every page in the application. It sets `faces-
+  redirect=true` for every page. This helps the application avoid the address being
+  different than the current page and also using the POST/Redirect/GET design
+  pattern for form submission. The login view (location to redirect a user to
+  login) is set to the conferences page. Also by using `@AccessDeniedView` a
+  user will be redirected to the login page if their user does not meet security
+  restrictions for a page.
+
+  With the view in place (or at least partially), the application needs a way
+  to communicate with the database. 
+  [Seam Persistence helps with this](../persistence).
+-#
+  TODO: We need to use some more features of Faces in the example

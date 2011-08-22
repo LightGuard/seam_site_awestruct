@@ -3,26 +3,27 @@ layout: base
 title: Getting Started With Seam 3 using the Confbuzz Example -- Security
 ---
 :markdown
-  ## [Setup](id:setup)
-  Add the following to your pom.xml:
-%pre(class='syntax xml')
-  :escaped
-    <dependency>
-        <groupId>org.jboss.seam.security</groupId>
-        <artifactId>seam-security</artifactId>
-    </dependency>
+  Security for a web site is not an afterthought, it must be developed into an
+  application from the start to avoid headaches and bugs later on during
+  development. Fortunately, Seam Security makes this quite easy and provides
+  authentication, authorization and a simple means of creating and applying
+  security checks in a type safe way.
+
+  Add the following to pom.xml to import Seam Security into the application:
+.configuration.maven 
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.jboss.seam.security</groupId>
+          <artifactId>seam-security</artifactId>
+      </dependency>
 :markdown
-  Persisted identity information must be configured before it is used. The
-  preferred way of doing this is to use Seam Config, which is [covered in the
-  Seam Config section](../config). At a bare minimum the identity portion of a
-  JPA backed IDM (identity management) solution and the relationship must be
-  configured. However, it is good practice to configure credentials and
-  relationships as well. Other options such as attributes (that may be
-  additional names, departments, contact information, etc.) can also be
-  supported and configured if needed. It is also worth noting Seam Security is
-  based on [PicketLink](http://anonsvn.jboss.org/repos/picket- link/idm/downloads/docs/1.0.0.GA/ReferenceGuide/en-
-  US/html_single/index.html), it is worthwhile to understand PicketLink to more
-  fully understand Seam Security.
+  The first thing the application is going to need to manage security is a
+  concept of an Identity and the associated information for that identity such
+  as roles, groups, authentication credentials, etc. In short an Identity
+  Management (IDM) solution. Seam Security provides all of this and comes ready
+  to use out of the box with database persisted identity information.  
 
   ## [JPA backed IDM](id:jpaidm)
   The JPA entities that are used to back the IDM solution are all available on
@@ -31,76 +32,78 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Security
   setup closely follows the [recommended schema](http://docs.jboss.org/seam/3/security/latest/reference/en-
   US/html/security-identitymanagement.html#d0e846), but with a couple of key
   differences, which are typical of many web application data schemas.
-%pre(class='syntax java')
-  :escaped
-    @Entity @Veto
-    public class Identity implements Serializable {
-        private static final long serialVersionUID = -8136797293873610623L;
+.code 
+  %span.listing_title Identity.java
+  %pre.syntax.java
+    :escaped
+      @Entity @Veto
+      public class Identity implements Serializable {
+          private static final long serialVersionUID = -8136797293873610623L;
 
-        private Long id;
-        private Long version;
-        private String name;
-        private String givenFirst;
-        private String givenLast;
-        private String credential;
-        private String email;
-        private String credentialType;
-        private IdentityType type;
+          private Long id;
+          private Long version;
+          private String name;
+          private String givenFirst;
+          private String givenLast;
+          private String credential;
+          private String email;
+          private String credentialType;
+          private IdentityType type;
 
-        @Id @GeneratedValue
-        public Long getId() { return this.id; }
+          @Id @GeneratedValue
+          public Long getId() { return this.id; }
 
-        public void setId(Long id) { this.id = id; }
+          public void setId(Long id) { this.id = id; }
 
-        @Version
-        public Long getVersion() { return this.version; }
+          @Version
+          public Long getVersion() { return this.version; }
 
-        public void setVersion(Long version) { this.version = version; }
+          public void setVersion(Long version) { this.version = version; }
 
-        @NotNull
-        @Size(min = 1, max = 32)
-        @Column(unique = true, nullable = false)
-        @IdentityProperty(PropertyType.NAME)
-        public String getName() { return name; }
+          @NotNull
+          @Size(min = 1, max = 32)
+          @Column(unique = true, nullable = false)
+          @IdentityProperty(PropertyType.NAME)
+          public String getName() { return name; }
 
-        public void setName(String name) { this.name = name; }
+          public void setName(String name) { this.name = name; }
 
-        public String getGivenFirst() { return givenFirst; }
+          public String getGivenFirst() { return givenFirst; }
 
-        public void setGivenFirst(String givenFirst) { this.givenFirst = givenFirst; }
+          public void setGivenFirst(String givenFirst) { this.givenFirst = givenFirst; }
 
-        public String getGivenLast() { return givenLast; }
+          public String getGivenLast() { return givenLast; }
 
-        public void setGivenLast(String givenLast) { this.givenLast = givenLast; }
+          public void setGivenLast(String givenLast) { this.givenLast = givenLast; }
 
-        @IdentityProperty(PropertyType.CREDENTIAL)
-        @NotNull
-        @Column(nullable = false)
-        public String getCredential() { return credential; }
+          @IdentityProperty(PropertyType.CREDENTIAL)
+          @NotNull
+          @Column(nullable = false)
+          public String getCredential() { return credential; }
 
-        public void setCredential(String credential) { this.credential = credential; }
+          public void setCredential(String credential) { this.credential = credential; }
 
-        @NotNull
-        @IdentityProperty(PropertyType.CREDENTIAL_TYPE)
-        @Column(nullable = false)
-        public String getCredentialType() { return credentialType; }
+          @NotNull
+          @IdentityProperty(PropertyType.CREDENTIAL_TYPE)
+          @Column(nullable = false)
+          public String getCredentialType() { return credentialType; }
 
-        public void setCredentialType(String credentialType) { this.credentialType = credentialType; }
+          public void setCredentialType(String credentialType) { this.credentialType = credentialType; }
 
-        @Email
-        @NotNull
-        @Column(nullable = false)
-        public String getEmail() { return email; }
+          @Email
+          @NotNull
+          @Column(nullable = false)
+          public String getEmail() { return email; }
 
-        public void setEmail(String email) { this.email = email; }
+          public void setEmail(String email) { this.email = email; }
 
-        @ManyToOne
-        @IdentityProperty(PropertyType.TYPE)
-        @JoinColumn(name = "IDENTITY_OBJECT_TYPE_ID")
-        public IdentityType getType() { return type; }
+          @ManyToOne
+          @IdentityProperty(PropertyType.TYPE)
+          @JoinColumn(name = "IDENTITY_OBJECT_TYPE_ID")
+          public IdentityType getType() { return type; }
 
-        public void setType(IdentityType type) { this.type = type; }
-    }
+          public void setType(IdentityType type) { this.type = type; }
+      }
 :markdown
   The above class is used as the identity configuration, and also the credential
   configuration. Seam Security will recognize credential information if it is on
@@ -113,24 +116,26 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Security
   them in the view layer to ease authentication. The login form [mainLayout.xhtml](https://github.com/seam/seam-example- confbuzz/blob/develop/src/main/webapp/layout/mainLayout.xhtml) makes use of
   the `Identity` and `Credential` objects to populate user authentication data
   and to authenticate using Seam Security:
-%pre(class='syntax html')
-  :escaped
-    <h:form id="loginForm">
-        <ui:fragment id="loginFormControls" rendered="\#{!identity.loggedIn}">
-            <h:outputLabel id="usernameLbl" for="usernameInput" value="Username" />
-            <h:inputText id="usernameInput" value="\#{credentials.username}"/>
-            <h:outputLabel id="passwordLbl" for="passwordInput" value="Password" />
-            <h:inputSecret id="passwordInput" value="\#{credentials.password}"/>
-            <h:commandButton id="loginBtn" action="\#{identity.login()}" value="Sign in" />
-        </ui:fragment>
-        <div>
-            <h:link id="homeLink" value="Home" outcome="/conferences.xhtml"/>
-            <h:panelGroup rendered="\#{identity.loggedIn}">
-                | you are signed in as \#{credentials.username}, do you want to
-                <h:commandLink id="logoutBtn" value="sign out" action="\#{identity.logout()}"/>?
-            </h:panelGroup>
-        </div>
-    </h:form>
+.code
+  %span.listing_title mainLayout.xhtml
+  %pre.syntax.html
+    :escaped
+      <h:form id="loginForm">
+          <ui:fragment id="loginFormControls" rendered="\#{!identity.loggedIn}">
+              <h:outputLabel id="usernameLbl" for="usernameInput" value="Username" />
+              <h:inputText id="usernameInput" value="\#{credentials.username}"/>
+              <h:outputLabel id="passwordLbl" for="passwordInput" value="Password" />
+              <h:inputSecret id="passwordInput" value="\#{credentials.password}"/>
+              <h:commandButton id="loginBtn" action="\#{identity.login()}" value="Sign in" />
+          </ui:fragment>
+          <div>
+              <h:link id="homeLink" value="Home" outcome="/conferences.xhtml"/>
+              <h:panelGroup rendered="\#{identity.loggedIn}">
+                  | you are signed in as \#{credentials.username}, do you want to
+                  <h:commandLink id="logoutBtn" value="sign out" action="\#{identity.logout()}"/>?
+              </h:panelGroup>
+          </div>
+      </h:form>
 :markdown
   The `Identity` object is exposed to EL using the `@Named` annotation, as is
   the `Credential` object. When the user fills in the form and clicks the "Sign
@@ -139,6 +144,84 @@ title: Getting Started With Seam 3 using the Confbuzz Example -- Security
   session. The login method uses these to authenticate with the configured IDM
   solution. Once the user has authenticated, the identity object can be
   consulted for roles and other authorizations.
+
+  Persisted identity information must be configured before it is used. The
+  preferred way of doing this is to use Seam Config. At a bare minimum the
+  identity portion of a JPA backed IDM (identity management) solution and the
+  relationship must be configured. However, it is good practice to configure
+  credentials and relationships as well. Other options such as attributes (that
+  may be additional names, departments, contact information, etc.) can also be
+  supported and configured if needed. It is also worth noting Seam Security is
+  based on [PicketLink](http://anonsvn.jboss.org/repos/picket- link/idm/downloads/docs/1.0.0.GA/ReferenceGuide/en-
+  US/html_single/index.html), it is worthwhile to understand PicketLink to more
+  fully understand Seam Security.
+
+  The following will need to be added to the pom.xml file to pull in Seam
+  Config XML:
+.configuration.maven 
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.jboss.seam.config</groupId>
+          <artifactId>seam-config-xml</artifactId>
+      </dependency>
+:markdown
+  Seam Config XML obviously requires an XML file in the project. Place a file
+  named seam-beans.xml in src/main/resources/META-INF. Seam Config is a powerful
+  mechanism for configuring, altering, and enhancing CDI beans. It is also the
+  preferred method for configuring Seam Security identity stores, and can be
+  used to expose beans within non CDI containers (jars which have no beans.xml).
+
+  ## [seam-beans.xml](xml)
+  The XML file for configuring CDI beans is placed at src/main/resources/META-INF/seam-beans.xml
+.configuration.maven
+  %span.listing_title seam-beans.xml
+  %pre.syntax.xml
+    :escaped
+      <?xml version="1.0" encoding="UTF-8"?>
+      <beans xmlns="http://java.sun.com/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:s="urn:java:ee"
+             xmlns:sec="urn:java:org.jboss.seam.security.permission:org.jboss.seam.security.management.picketlink"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://jboss.org/schema/cdi/beans_1_0.xsd">
+
+          <sec:JpaPermissionStore>
+              <s:replaces/>
+              <sec:identityPermissionClass>seam.example.confbuzz.model.IdentityPermission</sec:identityPermissionClass>
+          </sec:JpaPermissionStore>
+
+          <sec:JpaIdentityStoreConfiguration>
+              <s:replaces/>
+              <sec:identityClass>seam.example.confbuzz.model.Identity</sec:identityClass>
+              <sec:relationshipClass>seam.example.confbuzz.model.IdentityRelationship</sec:relationshipClass>
+              <sec:roleTypeClass>seam.example.confbuzz.model.IdentityRole</sec:roleTypeClass>
+              <sec:attributeClass>seam.example.confbuzz.model.IdentityAttribute</sec:attributeClass>
+          </sec:JpaIdentityStoreConfiguration>
+      </beans>
+:markdown
+  The `JpaPermissionStore` class is used as a base and Seam Config is replacing
+  the `identityPermissionClass` with the `IdentityPermission` class in the
+  application. Similarly, the `JpaIdentityStoreConfiguration` class is replaced
+  to reference classes in the application instead of the defaults.
+
+  If the desired outcome is to modify an existing class with new data, while
+  only having one bean installed into the system, use `s:replaces`, otherwise
+  make use of `s:modifies` and include additional qualifiers.
+
+  It is possible to modify producers, create virtual producers, configure beans,
+  install multiple beans of the same type using different qualifiers, configure
+  fields and methods, modifying injection points using Seam Config. An example
+  of this would be to configure a persistence unit producer using XML instead of
+  a Java class as was done in this example. Please consult the [reference guide](http://docs.jboss.org/seam/3/config/latest/reference/en-US/html/xml- provider.html#d0e566) 
+  for more information and examples.
+
+  There's one last idea that should be addressed early during development of an
+  application: Exception Handling. It's a fact that no matter how well written
+  an application may be exceptions will happen, perhaps a user mis-typed some
+  information, or entry in the database isn't found, or even something as
+  trivial as a failed authentication request. [Confbuzz makes use of Seam Catch
+  to deal with exceptions](../exceptions).
 -#
   TODO: We need to make use of authorizations and role checks in the pages and
   also in the view config. Those should briefly be explained in the faces

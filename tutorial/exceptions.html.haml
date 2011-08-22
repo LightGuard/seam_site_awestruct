@@ -1,0 +1,75 @@
+---
+layout: base
+title: Getting Started With Seam 3 using the Confbuzz Example -- Exceptions
+---
+-#
+  Setup with the handler
+
+  Explain what the handlers are doing and when they're invoked
+.configuration.maven 
+  Seam Catch requires no additional setup besides add the jars to the 
+  project. Add this to pom.xml:
+  %span.listing_title pom.xml
+  %pre.syntax.xml
+    :escaped
+      <dependency>
+          <groupId>org.jboss.seam.catch</groupId>
+          <artifactId>seam-catch</artifactId>
+      </dependency>
+:markdown 
+  ## [Defining Exception Handlers](exception_handlers)
+  Exception Handlers are methods with a specific parameter and annotation
+  within a class annotated with `@HandlesExceptions`. They are very easy to
+  create and allow for all exception handling within the application to be
+  done in one location, and used in catch blocks or from various framework
+  integration hooks.
+
+  The below class contains two exception handlers and one logging method
+  for failed login fired by Seam Security.
+.code
+  %span.listing_title ExceptionHandler.java
+  %pre.syntax.java
+    :escaped
+      @HandlesExceptions
+      public class ExceptionHandler {
+          public void authenticationException(@Handles CaughtException<AuthenticationException> e,
+                                              @TypedCategory(ExceptionHandler.class) ExceptionLogger logger, 
+                                              Credentials creds) {
+              logger.authenticationError(creds, e.getException());
+          }
+          
+          public void entityNotFoundException(@Handles CaughtException<EntityNotFoundException> e, 
+                                              @TypedCategory(ExceptionHandler.class) Logger logger,
+                                              HttpServletResponse response, FacesContext ctx) {
+              logger.error(e.getException().getMessage());
+              try {
+                  response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                  ctx.responseComplete();
+              }
+              catch (IOException io) {
+                  io.printStackTrace();
+              }
+          }
+
+          public void loginFailed(@Observes LoginFailedEvent event, 
+                                  @TypedCategory(ExceptionHandler.class) ExceptionLogger logger, 
+                                  Messages msg) {
+              logger.loginFailed();
+              msg.error("Invalid username and password combination. Please try again.");
+          }
+      }
+:markdown
+  The first exception handler (`authenticationException`) simply logs a failed
+  authentication. This could because of an incorrect username / password, or it
+  could be some other program exception which prohibited authentication from
+  completing successfully.
+
+  The next exception handler will send an HTTP error informing the user the
+  requested entity could not be found in the system. Both of these handlers make
+  use of injection points for the methods, the also use a type safe logger.
+
+  Exception handlers can be for a specific type or a broad type depending
+  on the type of the `CaughtException` parameter (which must be annotated
+  with `@Handles`). There doesn't have to be any further injections made on a
+  handler, but it is a convenient way of handling exceptions in a contextual
+  fashion.
